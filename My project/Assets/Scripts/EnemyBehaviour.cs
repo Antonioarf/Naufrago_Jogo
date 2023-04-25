@@ -40,14 +40,16 @@ public class EnemyBehaviour : MonoBehaviour {
     void Update() 
     {
         Vector2 playerPosition = GameObject.FindWithTag("Player").transform.position;
-        float distanceToPlayer = Vector2.Distance(transform.position, playerPosition);
+        float distanceToPlayer = Vector2.Distance(rb.transform.position, playerPosition);
 
         if (distanceToPlayer < minDistanceToChasePlayer) {
             movingDirection = playerPosition - (Vector2) transform.position;
             movingSpeed = chasingSpeed;
 
             if (distanceToPlayer < distanceToAttackPlayer) {
-                // animator.SetTrigger("EnemyIsAttacking");
+                Debug.Log("Attack!");
+                animator.SetBool("EnemyIsMoving", false);
+                animator.SetTrigger("EnemyIsAttacking");
                 // attack(gameObject player);
             }
             
@@ -63,8 +65,6 @@ public class EnemyBehaviour : MonoBehaviour {
 
         }
 
-
-        Debug.Log("Distance to player: " + distanceToPlayer.ToString());
     }
     
     void FixedUpdate ()
@@ -91,7 +91,6 @@ public class EnemyBehaviour : MonoBehaviour {
 
     Vector2 ChangeDirectionRandomly () {
         int index = Random.Range(0, directions.Length);
-        Debug.Log("Direction: " + "(" + directions[index].x + " " + directions[index].y +")");
         return directions[index];
     }
 }
