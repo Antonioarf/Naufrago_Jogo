@@ -16,6 +16,11 @@ public class EnemyBehaviour : MonoBehaviour {
     public float zombieDamage = 5f;
     public float attackCooldown = 2f;
 
+    // playlist of soundeffects
+    public AudioClip[] zombieSounds;
+    public AudioSource zombieAudioSource;
+    public float zombieSoundCooldown = 5f;
+    
     private Rigidbody2D rb;
     private Animator animator;
     
@@ -120,14 +125,17 @@ public class EnemyBehaviour : MonoBehaviour {
     {
         if (canAttack && !hasAttacked)
         {
+            hasAttacked = true;
+            lastAttack = Time.time;
+
             animator.SetBool("EnemyIsMoving", false);
             animator.SetTrigger("EnemyIsAttacking");
 
             Debug.Log("Attacked! Player HP: " +  target.GetComponent<PlayerController>().healthPoints);
             target.GetComponent<PlayerController>().healthPoints -= zombieDamage;
 
-            hasAttacked = true;
-            lastAttack = Time.time;
+            int index = Random.Range(0, zombieSounds.Length);
+            zombieAudioSource.PlayOneShot(zombieSounds[index], .6f);
         }
 
     }
