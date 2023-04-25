@@ -3,6 +3,7 @@ using System.Collections;
 
 public class EnemyBehaviour : MonoBehaviour {
     public float speed;
+    public float chasingSpeed;
 
     public float walkingTime;
     public float idleTime;
@@ -18,10 +19,14 @@ public class EnemyBehaviour : MonoBehaviour {
 
     private Vector2 movingDirection;
     private float distanceToPlayer;
+    private float movingSpeed;
 
-    // private bool isChasingPlayer = false;
-
-    private Vector2[] directions = { Vector2.zero, Vector2.up, Vector2.zero, Vector2.down, Vector2.zero, Vector2.left, Vector2.zero, Vector2.right };
+    private Vector2[] directions = { 
+        Vector2.zero, Vector2.up,
+        Vector2.zero, Vector2.down,
+        Vector2.zero, Vector2.left,
+        Vector2.zero, Vector2.right,
+    }; // 50% chance of not moving;
 
     void Start () {
         rb = GetComponent<Rigidbody2D>();
@@ -30,7 +35,6 @@ public class EnemyBehaviour : MonoBehaviour {
 
         initialTime = Time.time;
         waitTime = walkingTime;
-        // StartCoroutine(ChangeRandomDirection());
     }
 
     void Update() 
@@ -39,8 +43,8 @@ public class EnemyBehaviour : MonoBehaviour {
         float distanceToPlayer = Vector2.Distance(transform.position, playerPosition);
 
         if (distanceToPlayer < minDistanceToChasePlayer) {
-            // isChasingPlayer = true;
             movingDirection = playerPosition - (Vector2) transform.position;
+            movingSpeed = chasingSpeed;
 
             if (distanceToPlayer < distanceToAttackPlayer) {
                 // animator.SetTrigger("EnemyIsAttacking");
@@ -48,7 +52,7 @@ public class EnemyBehaviour : MonoBehaviour {
             }
             
         } else {
-            // isChasingPlayer = false;
+            movingSpeed = speed;
 
             if (Time.time - initialTime > waitTime) {
                 movingDirection = ChangeDirectionRandomly();
@@ -57,7 +61,6 @@ public class EnemyBehaviour : MonoBehaviour {
                 initialTime = Time.time;
             }
 
-            // ChangeRandomDirection();
         }
 
 
@@ -68,7 +71,7 @@ public class EnemyBehaviour : MonoBehaviour {
     {
         if (movingDirection != Vector2.zero) {
             animator.SetBool("EnemyIsMoving", true);
-            rb.MovePosition(rb.position + movingDirection * speed * Time.fixedDeltaTime);
+            rb.MovePosition(rb.position + movingDirection * movingSpeed * Time.fixedDeltaTime);
             rb.rotation = Mathf.Atan2(movingDirection.y, movingDirection.x) * Mathf.Rad2Deg;
         } 
         else {
@@ -88,7 +91,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
     Vector2 ChangeDirectionRandomly () {
         int index = Random.Range(0, directions.Length);
-        Debug.Log("Direction: " + directions[index].ToString());
+        Debug.Log("Direction: " + "(" + directions[index].x + " " + directions[index].y +")");
         return directions[index];
     }
 }
