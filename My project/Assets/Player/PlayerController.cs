@@ -5,14 +5,18 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-
-    private Rigidbody2D rb;
     public float linear_speed;
     public float rotation_speed;
-    public float bullet_speed;
-    Vector2 movementInput;
+
+    public float healthPoints = 100f;
+
     public GameObject bulletPrefab; // assign your bullet prefab in the Inspector
-    // Start is called before the first frame update
+    public float bullet_speed;
+
+
+    Vector2 movementInput;
+    private Rigidbody2D rb;
+    
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();

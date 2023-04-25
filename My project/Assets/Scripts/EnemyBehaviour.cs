@@ -8,8 +8,13 @@ public class EnemyBehaviour : MonoBehaviour {
     public float walkingTime;
     public float idleTime;
 
+    public GameObject target;
     public float minDistanceToChasePlayer = 10f;
     public float distanceToAttackPlayer = 1f;
+
+    public float zombieHealthPoints = 10f;
+    public float zombieDamage = 5f;
+    public float attackCooldown = 2f;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -17,9 +22,15 @@ public class EnemyBehaviour : MonoBehaviour {
     private float waitTime;
     private float initialTime;
 
+    private float lastAttack;
+
     private Vector2 movingDirection;
-    private float distanceToPlayer;
     private float movingSpeed;
+    
+    private float distanceToPlayer;
+    private bool canAttack = false;
+    private bool hasAttacked = false;
+
 
     private Vector2[] directions = { 
         Vector2.zero, Vector2.up,
@@ -32,6 +43,7 @@ public class EnemyBehaviour : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
+        target = GameObject.FindWithTag("Player");
 
         initialTime = Time.time;
         waitTime = walkingTime;
@@ -39,7 +51,7 @@ public class EnemyBehaviour : MonoBehaviour {
 
     void Update() 
     {
-        Vector2 playerPosition = GameObject.FindWithTag("Player").transform.position;
+        Vector2 playerPosition = target.transform.position;
         float distanceToPlayer = Vector2.Distance(rb.transform.position, playerPosition);
 
         if (distanceToPlayer < minDistanceToChasePlayer) {
@@ -47,10 +59,11 @@ public class EnemyBehaviour : MonoBehaviour {
             movingSpeed = chasingSpeed;
 
             if (distanceToPlayer < distanceToAttackPlayer) {
-                Debug.Log("Attack!");
-                animator.SetBool("EnemyIsMoving", false);
-                animator.SetTrigger("EnemyIsAttacking");
-                // attack(gameObject player);
+                canAttack = true;
+                
+                attack(target);
+            } else {
+                canAttack = false;
             }
             
         } else {
@@ -65,17 +78,26 @@ public class EnemyBehaviour : MonoBehaviour {
 
         }
 
+        if (hasAttacked) {
+            if (Time.time - lastAttack > attackCooldown) {
+                hasAttacked = false;
+                lastAttack = Time.time;
+            }
+        }
+
     }
     
     void FixedUpdate ()
     {
-        if (movingDirection != Vector2.zero) {
-            animator.SetBool("EnemyIsMoving", true);
-            rb.MovePosition(rb.position + movingDirection * movingSpeed * Time.fixedDeltaTime);
-            rb.rotation = Mathf.Atan2(movingDirection.y, movingDirection.x) * Mathf.Rad2Deg;
-        } 
-        else {
-            animator.SetBool("EnemyIsMoving", false);
+        if (!hasAttacked) {
+            if (movingDirection != Vector2.zero) {
+                animator.SetBool("EnemyIsMoving", true);
+                rb.MovePosition(rb.position + movingDirection * movingSpeed * Time.fixedDeltaTime);
+                rb.rotation = Mathf.Atan2(movingDirection.y, movingDirection.x) * Mathf.Rad2Deg;
+            } 
+            else {
+                animator.SetBool("EnemyIsMoving", false);
+            }
         }
 
     }
@@ -92,5 +114,21 @@ public class EnemyBehaviour : MonoBehaviour {
     Vector2 ChangeDirectionRandomly () {
         int index = Random.Range(0, directions.Length);
         return directions[index];
+    }
+
+    void attack(GameObject target)
+    {
+        if (canAttack && !hasAttacked)
+        {
+            animator.SetBool("EnemyIsMoving", false);
+            animator.SetTrigger("EnemyIsAttacking");
+
+            Debug.Log("Attacked! Player HP: " +  target.GetComponent<PlayerController>().healthPoints);
+            target.GetComponent<PlayerController>().healthPoints -= zombieDamage;
+
+            hasAttacked = true;
+            lastAttack = Time.time;
+        }
+
     }
 }
