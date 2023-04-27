@@ -22,33 +22,25 @@ public class CollectableObject : MonoBehaviour
 
     public void CollisionWithPlayerDetected() {
         Debug.Log("Collision with " + collectableType);
+
+
         if (gameObject.CompareTag("Food")) {
-            player.GetComponent<PlayerController>().healthPoints += 10;
+            player.GetComponent<PlayerController>().increaseHealthPoints(10);
+        } 
+        else if (gameObject.CompareTag("Wood")) {
+            player.GetComponent<PlayerController>().woodCollected += 1;
         }
-        switch (collectableType)
-        {
-            case "Food":
-                player.GetComponent<PlayerController>().healthPoints += 10;
-                break;
-                
-            case "Wood":
-                player.GetComponent<PlayerController>().woodCollected += 1;
-                break;
-
-            case "Rope":
-                player.GetComponent<PlayerController>().ropeCollected += 1;
-                break;
-
-            case "Fabric":
-                player.GetComponent<PlayerController>().tissueCollected += 1;
-                break;
-
-            default:
-                break;
+        else if (gameObject.CompareTag("Rope")) {
+            player.GetComponent<PlayerController>().ropeCollected += 1;
+        } 
+        else if (gameObject.CompareTag("Fabric")) {
+            player.GetComponent<PlayerController>().fabricCollected += 1;
         }
+
+
         
         audioSource.PlayOneShot(collectSound);
 
-        Invoke("DestroySelf", 0.5f);
+        Invoke("DestroySelf", 0.2f);
     }
 }

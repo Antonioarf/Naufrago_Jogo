@@ -8,7 +8,12 @@ public class PlayerController : MonoBehaviour
     public float linear_speed;
     public float rotation_speed;
 
-    public float healthPoints = 100f;
+    public int healthPoints = 80;
+    public int maxHealthPoints = 100;
+
+    public int woodCollected = 0;
+    public int ropeCollected = 0;
+    public int fabricCollected = 0;
 
     public GameObject bulletPrefab; // assign your bullet prefab in the Inspector
     public float bullet_speed;
@@ -20,6 +25,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        PlayerPrefs.DeleteAll();
     }
 
     // Update is called once per frame
@@ -36,6 +42,7 @@ public class PlayerController : MonoBehaviour
 
 
 
+    
     void OnMove(InputValue movementValue) {
         movementInput = movementValue.Get<Vector2>();
     }
@@ -57,12 +64,20 @@ public class PlayerController : MonoBehaviour
         // Shoot the bullet in the direction of the mouse cursor
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
         bulletRigidbody.velocity = direction * bullet_speed;
-        }
+    }
 
+    
     void Rotate(Vector2 direction){ // essa eh na conta do GPT
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
     }
 
+    public void increaseHealthPoints(int amount) {
+        if (healthPoints + amount > maxHealthPoints) {
+            healthPoints = maxHealthPoints;
+        } else {
+            healthPoints += amount;
+        }
     }
+}
 

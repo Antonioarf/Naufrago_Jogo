@@ -12,8 +12,8 @@ public class EnemyBehaviour : MonoBehaviour {
     public float minDistanceToChasePlayer = 10f;
     public float distanceToAttackPlayer = 1f;
 
-    public float zombieHealthPoints = 10f;
-    public float zombieDamage = 5f;
+    public int zombieHealthPoints = 10;
+    public int zombieDamage = 5;
     public float attackCooldown = 2f;
 
     // playlist of soundeffects
@@ -44,7 +44,8 @@ public class EnemyBehaviour : MonoBehaviour {
         Vector2.zero, Vector2.right,
     }; // 50% chance of not moving;
 
-    void Start () {
+    void Start ()
+    {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
@@ -104,10 +105,10 @@ public class EnemyBehaviour : MonoBehaviour {
                 animator.SetBool("EnemyIsMoving", false);
             }
         }
-
     }
     
-    float setWaitTime(Vector2 direction) {
+    float setWaitTime(Vector2 direction) 
+    {
         if (direction == Vector2.zero) {
             return idleTime;
         } 
@@ -116,7 +117,8 @@ public class EnemyBehaviour : MonoBehaviour {
         
     }
 
-    Vector2 ChangeDirectionRandomly () {
+    Vector2 ChangeDirectionRandomly () 
+    {
         int index = Random.Range(0, directions.Length);
         return directions[index];
     }
